@@ -1,11 +1,19 @@
-
+/**
+ * Crea la pista
+ * @class
+ */
 class road{
+  /**
+   * Constructor
+   */
   constructor(){
     this.mesh = new THREE.Object3D();
     this.create();
     this.mesh.receiveShadow = true;
   }
-  
+  /**
+   * Crea el cuerpo
+   */
   create(){
     let geom = new THREE.CylinderGeometry(375,375,50,150,10);
     geom.applyMatrix(new THREE.Matrix4().makeRotationX(-Math.PI/2));

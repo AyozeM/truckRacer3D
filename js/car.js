@@ -18,8 +18,8 @@ class car {
          */
         this.fuel = 100;
         
-        this.cabin();
-        this.engine();
+        this.gandola();
+        this.cabina();
         this.wheels();
         this.glasses();
         /**
@@ -30,9 +30,9 @@ class car {
         },1000);
     }
     /**
-     * Crea la cabina
+     * Crea la gandola
      */
-    cabin(){
+    gandola(){
         let geomCockpit = new THREE.BoxGeometry(60,50,60,1,1,1);
         let matCockpit = new THREE.MeshPhongMaterial({color:Colors.red, shading:THREE.FlatShading});
         let cockpit = new THREE.Mesh(geomCockpit, matCockpit);
@@ -60,9 +60,9 @@ class car {
         glasses[1].position.x = -28.75;
     }
     /**
-     * Crea el capo
+     * Crea la cabina
      */
-    engine(){
+    cabina(){
         let geomEngine = new THREE.BoxGeometry(58,40,60,1,1,1);
         let matEngine = new THREE.MeshPhongMaterial({color:0x59332e, shading:THREE.FlatShading});
         let engine = new THREE.Mesh(geomEngine, matEngine);
@@ -118,6 +118,7 @@ class car {
                     this.actuallyPosition = (this.tope -5)*-1;
                     this.life -= 5;
                 }                     
+                this.mesh.rotation.y = .05 * Math.PI;
                 break;
             case 'ArrowRight':
                 if(this.actuallyPosition <= this.tope){
@@ -127,11 +128,18 @@ class car {
                     this.actuallyPosition = this.tope -5;
                     this.life -= 5;
                 }
+                this.mesh.rotation.y = -.05 * Math.PI;
+                break;
+            default:
+                this.mesh.rotation.y = 0;
                 break;
         }
         this.mesh.position.x = this.actuallyPosition;
     }
-
+    /**
+     * Inserta gasolina al camion, comprobando que no se rebose el tanque
+     * @param {cantidad de gasolina} fuel 
+     */
     setFuel(fuel){
         this.fuel += fuel;
         if(this.fuel > 100){

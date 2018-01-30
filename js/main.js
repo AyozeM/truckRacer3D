@@ -17,8 +17,7 @@ let scene,
 
 //SCREEN & MOUSE VARIABLES
 
-let HEIGHT, WIDTH,
-    mousePos = { x: 0, y: 0 };
+let HEIGHT, WIDTH;
 
 //INIT THREE JS, SCREEN AND MOUSE EVENTS
 
@@ -40,10 +39,7 @@ const createScene = () =>{
     );
   scene.fog = new THREE.Fog(0xf7d9aa, 100,950);
   camera.position.x = 0;
-  /* camera.position.x = 200; */
   camera.position.z = 200;
-  /* camera.position.z = 1000; */
-  /* camera.position.y = 100; */
   camera.position.y = 100;
 
   renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
@@ -88,53 +84,67 @@ const createLights = () =>{
   scene.add(hemisphereLight);
   scene.add(shadowLight);
 }
+
 // 3D Models
 let actualRoad;
 let raceCar;
 let can;
+let barraVida = 100;
+let barraFuel = 100;
+let distancia = 0;
+
+/**
+ * CREATE OBJECTS
+ */
+/**
+ * Se encarga de crear el camion
+ */
 const createCar = () =>{
   raceCar = new car();
   raceCar.mesh.scale.set(.10,.10,.10);
-  //raceCar.mesh.position.z = 150;
   raceCar.mesh.position.z = 170;
   raceCar.mesh.rotation.x = .12 * Math.PI;
   scene.add(raceCar.mesh);
 }
-
+/**
+ * Se encarga de crear la carretera
+ */
 const createRoad = () =>{
   actualRoad = new road();
   actualRoad.mesh.position.y = -250;
   actualRoad.mesh.rotation.y = .5 * Math.PI;
   scene.add(actualRoad.mesh);
 }
+/**
+ * Se encarga de crear latas de gasolina
+ */
 const createCan = () =>{
-  can = new fuelCan(10);
+  can = new fuelCan(10,10,5,10);
   can.mesh.scale.set(.5,.5,.5);
   can.mesh.position.y = 114;
   can.mesh.position.z = 100;
   can.mesh.rotation.x = .1 * Math.PI;
   scene.add(can.mesh);
 }
-let barraVida = 100;
-let barraFuel = 100;
-const loop = () =>{
-  updateCar();
-  updateRoad();
-  if(can != null){
-    updateCan();
-    if(raceCar.mesh.position.z-7 <= can.mesh.position.z && raceCar.mesh.position.x == can.mesh.position.x){
-      raceCar.setFuel(can.litres);
-      scene.remove(scene.getObjectByName(can.mesh.name));
-      can = null;
-    }   
-  }
-  updateScore();
-  renderer.render(scene, camera);
-  requestAnimationFrame(loop);
-}
+/**
+ * UPDATE OBJECTS
+ */
+
+ /**
+  * Actualiza los kms recorridos
+  */
+setInterval(() =>{
+  $("distancia").text(`${Math.round(distancia*100)/100} km`);
+},100)
+/**
+ * Se ocupa de mover la lata de gasolina
+ */
 const updateCan = () => {
   can.move();
 }
+/**
+ * Se encarga de mantener la puntuacion actualizada
+ */
 const updateScore = () =>{
   if(barraVida != raceCar.life){
     barraVida = raceCar.life;
@@ -145,15 +155,50 @@ const updateScore = () =>{
     $("#fuel").find('.barra').css('width',`${barraFuel}%`);
   }
 }
+/**
+ * Se encarga de actualizar la posicion del camion
+ */
 const updateCar = () =>{
   raceCar.move(direccion);
   raceCar.mesh.position.y = 88.5;  
-  //raceCar.mesh.rotation.y = 1 * Math.PI;
 }
+/**
+ * Se encarga de hacer rodar la pista
+ */
 const updateRoad = () =>{
-  //actualRoad.mesh.rotation.z += .005;
+  actualRoad.mesh.rotation.z += .005;
 }
-const init = event =>{
+/**
+ * Bucle principal del juego
+ */
+const loop = () =>{
+  distancia+= 0.05;
+  updateCar();
+  updateRoad();
+  compruebaColision();
+  updateScore();
+  renderer.render(scene, camera);
+  requestAnimationFrame(loop);
+}
+/**
+ * Comprueba si hubo colision con una lata de gasolina
+ */
+const compruebaColision = () => {
+  if(can != null){
+    updateCan();
+    if(raceCar.mesh.position.z-7 <= can.mesh.position.z){
+      if(can.mesh.position.x >= raceCar.mesh.position.x -5 ||can.mesh.position.x >= raceCar.mesh.position.x -5){
+        raceCar.setFuel(can.litres);
+        scene.remove(scene.getObjectByName(can.mesh.name));
+        can = null;
+      }
+    }
+  }
+}
+/**
+ * Inicializa todos los elementos del juego
+ */
+const init = () =>{
   createScene();
   createLights();
   createCar();
@@ -162,7 +207,7 @@ const init = event =>{
   loop();
 }
 
-// HANDLE MOUSE EVENTS
+// HANDLE EVENTS
 let direccion;
 window.addEventListener('keydown',(e)=>{
     direccion = e.code;
