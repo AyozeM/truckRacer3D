@@ -40,7 +40,10 @@ const createScene = () =>{
     );
   scene.fog = new THREE.Fog(0xf7d9aa, 100,950);
   camera.position.x = 0;
+  /* camera.position.x = 200; */
   camera.position.z = 200;
+  /* camera.position.z = 1000; */
+  /* camera.position.y = 100; */
   camera.position.y = 100;
 
   renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
@@ -88,7 +91,7 @@ const createLights = () =>{
 // 3D Models
 let actualRoad;
 let raceCar;
-
+let can;
 const createCar = () =>{
   raceCar = new car();
   raceCar.mesh.scale.set(.10,.10,.10);
@@ -104,14 +107,33 @@ const createRoad = () =>{
   actualRoad.mesh.rotation.y = .5 * Math.PI;
   scene.add(actualRoad.mesh);
 }
+const createCan = () =>{
+  can = new fuelCan(10);
+  can.mesh.scale.set(.5,.5,.5);
+  can.mesh.position.y = 114;
+  can.mesh.position.z = 100;
+  can.mesh.rotation.x = .1 * Math.PI;
+  scene.add(can.mesh);
+}
 let barraVida = 100;
 let barraFuel = 100;
 const loop = () =>{
   updateCar();
+  updateRoad();
+  if(can != null){
+    updateCan();
+    if(raceCar.mesh.position.z-7 <= can.mesh.position.z && raceCar.mesh.position.x == can.mesh.position.x){
+      raceCar.setFuel(can.litres);
+      scene.remove(scene.getObjectByName(can.mesh.name));
+      can = null;
+    }   
+  }
   updateScore();
-  updateRoad();    
   renderer.render(scene, camera);
   requestAnimationFrame(loop);
+}
+const updateCan = () => {
+  can.move();
 }
 const updateScore = () =>{
   if(barraVida != raceCar.life){
@@ -126,24 +148,21 @@ const updateScore = () =>{
 const updateCar = () =>{
   raceCar.move(direccion);
   raceCar.mesh.position.y = 88.5;  
+  //raceCar.mesh.rotation.y = 1 * Math.PI;
 }
 const updateRoad = () =>{
-  actualRoad.mesh.rotation.z += .005;
+  //actualRoad.mesh.rotation.z += .005;
 }
 const init = event =>{
   createScene();
   createLights();
   createCar();
   createRoad();
+  createCan();
   loop();
 }
 
 // HANDLE MOUSE EVENTS
-
-/* var mousePos = { x: 0, y: 0 };
-let x = {
-    posicion : 0
-} */
 let direccion;
 window.addEventListener('keydown',(e)=>{
     direccion = e.code;

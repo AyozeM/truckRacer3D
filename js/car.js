@@ -131,4 +131,11 @@ class car {
         }
         this.mesh.position.x = this.actuallyPosition;
     }
+
+    setFuel(fuel){
+        this.fuel += fuel;
+        if(this.fuel > 100){
+            this.fuel = 100;
+        }
+    }
 }

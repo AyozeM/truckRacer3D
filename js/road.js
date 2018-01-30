@@ -1,7 +1,7 @@
 
 class road{
   constructor(){
-    this.mesh = null;
+    this.mesh = new THREE.Object3D();
     this.create();
     this.mesh.receiveShadow = true;
   }
@@ -12,12 +12,13 @@ class road{
     let texturaloader = new THREE.TextureLoader();
     let createTexture = new texturaloader.load('../img/cesped.jpg');
     let mat = new THREE.MeshPhongMaterial({
-      color:Colors.blue,
+      color:'green',
       map:createTexture,
-      transparent:true,
+      transparent:false,
       opacity:.6,
       shading:THREE.FlatShading,
     });
-    this.mesh = new THREE.Mesh(geom, mat);
+    let x = new THREE.Mesh(geom, mat);
+    this.mesh.add(x);
   }
 }   
