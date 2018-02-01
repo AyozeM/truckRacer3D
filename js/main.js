@@ -88,11 +88,11 @@ const createLights = () =>{
 // 3D Models
 let actualRoad;
 let raceCar;
-let can;
 let barraVida = 100;
 let barraFuel = 100;
 let distancia = 0;
-
+let roadInpediments = [];
+let autoincremtal = 0;
 /**
  * CREATE OBJECTS
  */
@@ -119,13 +119,26 @@ const createRoad = () =>{
  * Se encarga de crear latas de gasolina
  */
 const createCan = () =>{
-  can = new fuelCan(10,10,5,10);
+  let can = new fuelCan(10,10,5,'red',10);
   can.mesh.scale.set(.5,.5,.5);
   can.mesh.position.y = 114;
   can.mesh.position.z = 100;
   can.mesh.rotation.x = .1 * Math.PI;
+  can.mesh.name = `oil-${++autoincremtal}`;
   scene.add(can.mesh);
+  roadInpediments.push(can);
 }
+const createInpediment = () =>{
+  let inpedimento = new inpediment(20,15,5,'gray');
+  inpedimento.mesh.scale.set(.5,.5,.5);
+  inpedimento.mesh.position.y = 114;
+  inpedimento.mesh.position.z = 100;
+  inpedimento.mesh.position.x = 20;
+  inpedimento.mesh.rotation.x = .1 * Math.PI;
+  inpedimento.mesh.name = `impedimento-${++autoincremtal}`;
+  scene.add(inpedimento.mesh);
+  roadInpediments.push(inpedimento);
+};
 /**
  * UPDATE OBJECTS
  */
@@ -133,7 +146,7 @@ const createCan = () =>{
  /**
   * Actualiza los kms recorridos
   */
-setInterval(() =>{
+let kms = setInterval(() =>{
   $("distancia").text(`${Math.round(distancia*100)/100} km`);
 },100)
 /**
@@ -171,29 +184,58 @@ const updateRoad = () =>{
 /**
  * Bucle principal del juego
  */
+let unlessElements = [];
 const loop = () =>{
   distancia+= 0.05;
   updateCar();
   updateRoad();
-  compruebaColision();
+  roadInpediments.map(e=>{
+    if(compruebaColision(e)){
+      switch(e.type){
+        case 'petrol':
+          raceCar.setFuel(e.litres);
+          break;
+        case 'inpediment':
+          alert("chocaste pendejo");
+          break;
+      }
+      unlessElements.push(roadInpediments.indexOf(e));
+      scene.remove(scene.getObjectByName(e.mesh.name));
+    }else if(e.mesh.position.z > 180){
+      unlessElements.push(roadInpediments.indexOf(e));
+      scene.remove(scene.getObjectByName(e.mesh.name));
+    }else{
+      e.move();
+    }
+  });
+  removeUnlessElements();
   updateScore();
   renderer.render(scene, camera);
   requestAnimationFrame(loop);
 }
 /**
+ * Elimina los elementos inutiles de la escena
+ */         
+const removeUnlessElements = () =>{
+  if(unlessElements.length > 0){
+    roadInpediments.splice(unlessElements[0],1);
+    unlessElements.splice(0,1);
+  
+    unlessElements.map(e=>{
+      roadInpediments.splice(e-1,1);
+    });
+    unlessElements = [];
+  }
+}
+/**
  * Comprueba si hubo colision con una lata de gasolina
  */
-const compruebaColision = () => {
-  if(can != null){
-    updateCan();
-    if(raceCar.mesh.position.z-7 <= can.mesh.position.z){
-      if(can.mesh.position.x >= raceCar.mesh.position.x -5 ||can.mesh.position.x >= raceCar.mesh.position.x -5){
-        raceCar.setFuel(can.litres);
-        scene.remove(scene.getObjectByName(can.mesh.name));
-        can = null;
-      }
-    }
+const compruebaColision = element =>{
+  let crash = false;
+  if(raceCar.mesh.position.z-7 <= element.mesh.position.z && (element.mesh.position.x >= raceCar.mesh.position.x -5 &&element.mesh.position.x <= raceCar.mesh.position.x + 5)){
+    crash = true;
   }
+  return crash;
 }
 /**
  * Inicializa todos los elementos del juego
@@ -204,6 +246,7 @@ const init = () =>{
   createCar();
   createRoad();
   createCan();
+  createInpediment();
   loop();
 }
 
