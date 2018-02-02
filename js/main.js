@@ -93,6 +93,15 @@ let barraFuel = 100;
 let distancia = 0;
 let roadInpediments = [];
 let autoincremtal = 0;
+let playerLose = false;
+
+let unlessElements = [];
+
+const dificultIncrementLevel = 100;
+let inpedimentSpeed = .3;
+let dificultPetrol =25;
+let dificultWalls = 15;
+let actualLevel = 1;
 /**
  * CREATE OBJECTS
  */
@@ -118,26 +127,33 @@ const createRoad = () =>{
 /**
  * Se encarga de crear latas de gasolina
  */
-const createCan = () =>{
-  let can = new fuelCan(10,10,5,'red',10);
+const createPetrol = (w,h,p,s) =>{
+  let can = new fuelCan(10,10,5,'red',s,10);
   can.mesh.scale.set(.5,.5,.5);
   can.mesh.position.y = 114;
   can.mesh.position.z = 100;
+  can.mesh.position.x = p;
   can.mesh.rotation.x = .1 * Math.PI;
   can.mesh.name = `oil-${++autoincremtal}`;
   scene.add(can.mesh);
   roadInpediments.push(can);
 }
-const createInpediment = () =>{
-  let inpedimento = new inpediment(20,15,5,'gray');
-  inpedimento.mesh.scale.set(.5,.5,.5);
-  inpedimento.mesh.position.y = 114;
-  inpedimento.mesh.position.z = 100;
-  inpedimento.mesh.position.x = 20;
-  inpedimento.mesh.rotation.x = .1 * Math.PI;
-  inpedimento.mesh.name = `impedimento-${++autoincremtal}`;
-  scene.add(inpedimento.mesh);
-  roadInpediments.push(inpedimento);
+/**
+ * Se encarga de crear un muro y añadirlo a la escena
+ * @param {anchura del muro} w 
+ * @param {altura del muro} h 
+ * @param {posicion del muro} p 
+ */
+const createWall = (w,h,p,s) =>{
+  let Wall = new wall(w,h,5,'gray',s,25);
+  Wall.mesh.scale.set(.5,.5,.5);
+  Wall.mesh.position.y = 114;
+  Wall.mesh.position.z = 100;
+  Wall.mesh.position.x = p;
+  Wall.mesh.rotation.x = .1 * Math.PI;
+  Wall.mesh.name = `impedimento-${++autoincremtal}`;
+  scene.add(Wall.mesh);
+  roadInpediments.push(Wall);
 };
 /**
  * UPDATE OBJECTS
@@ -152,9 +168,6 @@ let kms = setInterval(() =>{
 /**
  * Se ocupa de mover la lata de gasolina
  */
-const updateCan = () => {
-  can.move();
-}
 /**
  * Se encarga de mantener la puntuacion actualizada
  */
@@ -166,6 +179,10 @@ const updateScore = () =>{
   if(barraFuel != raceCar.fuel){
     barraFuel = raceCar.fuel;
     $("#fuel").find('.barra').css('width',`${barraFuel}%`);
+  }
+
+  if(barraFuel <= 0 || barraVida <= 0){
+    playerLose = true;
   }
 }
 /**
@@ -184,35 +201,83 @@ const updateRoad = () =>{
 /**
  * Bucle principal del juego
  */
-let unlessElements = [];
 const loop = () =>{
-  distancia+= 0.05;
-  updateCar();
-  updateRoad();
-  roadInpediments.map(e=>{
-    if(compruebaColision(e)){
-      switch(e.type){
-        case 'petrol':
-          raceCar.setFuel(e.litres);
-          break;
-        case 'inpediment':
-          alert("chocaste pendejo");
-          break;
+  if(!playerLose){
+    distancia+= 0.05;
+    changeLevel();
+    putWall();
+    putPetrol();
+    updateCar();
+    updateRoad();
+    roadInpediments.map(e=>{
+      if(checkCollision(e)){
+        switch(e.type){
+          case 'petrol':
+            raceCar.setFuel(e.litres);
+            break;
+          case 'inpediment':
+            raceCar.life -= e.damage;
+            break;
+        }
+        unlessElements.push(roadInpediments.indexOf(e));
+        scene.remove(scene.getObjectByName(e.mesh.name));
+      }else if(e.mesh.position.z > 180){
+        unlessElements.push(roadInpediments.indexOf(e));
+        scene.remove(scene.getObjectByName(e.mesh.name));
+      }else{
+        e.move();
       }
-      unlessElements.push(roadInpediments.indexOf(e));
-      scene.remove(scene.getObjectByName(e.mesh.name));
-    }else if(e.mesh.position.z > 180){
-      unlessElements.push(roadInpediments.indexOf(e));
-      scene.remove(scene.getObjectByName(e.mesh.name));
-    }else{
-      e.move();
-    }
-  });
-  removeUnlessElements();
-  updateScore();
-  renderer.render(scene, camera);
-  requestAnimationFrame(loop);
+    });
+    removeUnlessElements();
+    updateScore();
+    renderer.render(scene, camera);
+    requestAnimationFrame(loop);
+  }else{
+    alert("Has perdido");
+  }
 }
+/**
+ * Calcula el nivel en el que se esta jugado
+ * @param {disancia recorrida} distance 
+ */
+const getLevel = distance => Math.trunc(distance / dificultIncrementLevel)+1;
+/**
+ * Se encarga de poner los miro
+ */
+const putWall = () =>{
+  if((Math.round(distancia*100)/100)%dificultWalls == 0){
+    let w = Math.floor(Math.random() * (30 - (5))) + (5);
+    let p =  Math.floor(Math.random() * (20 - (-20))) + (-20);
+    createWall(w,10,p,inpedimentSpeed);
+  }
+}
+/**
+ * Se encarga de poner las latas de gasolina
+ */
+const putPetrol = () =>{
+  if((Math.round(distancia*100)/100)%dificultPetrol == 0){
+    let x =  Math.floor(Math.random() * (20 - (-20))) + (-20);
+    createPetrol(10,10,x,inpedimentSpeed);
+  }
+}
+/**
+ * Se encarga de incrementar la dificultad en base al nivel por el cual valla el jugador
+ */
+const changeLevel = ()=>{
+  if(actualLevel != getLevel(distancia)){
+    actualLevel++;
+    if(dificultWalls > 5){
+      dificultWalls-=5;
+    }
+    if(dificultPetrol < 50){
+      dificultPetrol+=5;
+    }
+    if(inpedimentSpeed < 2.4){
+      inpedimentSpeed+=.3;
+    }
+  }
+}
+
 /**
  * Elimina los elementos inutiles de la escena
  */         
@@ -230,7 +295,7 @@ const removeUnlessElements = () =>{
 /**
  * Comprueba si hubo colision con una lata de gasolina
  */
-const compruebaColision = element =>{
+const checkCollision = element =>{
   let crash = false;
   if(raceCar.mesh.position.z-7 <= element.mesh.position.z && (element.mesh.position.x >= raceCar.mesh.position.x -5 &&element.mesh.position.x <= raceCar.mesh.position.x + 5)){
     crash = true;
@@ -241,19 +306,34 @@ const compruebaColision = element =>{
  * Inicializa todos los elementos del juego
  */
 const init = () =>{
+   if($.browser.mobile){
+    $(".controlsContainer").append(
+      $("<span>",{id:"top","class":"controls",'data-direction':"top"}).click(manualDirection)
+    ).append(
+      $("<span>",{id:"left",class:"controls",'data-direction':"ArrowLeft"}).click(manualDirection)
+    ).append(
+      $("<span>",{id:"right",class:"controls",'data-direction':"ArrowRight"}).click(manualDirection)
+    );
+  }
   createScene();
   createLights();
   createCar();
   createRoad();
-  createCan();
-  createInpediment();
+  createPetrol();
+  createWall();
   loop();
 }
 
 // HANDLE EVENTS
 let direccion;
-window.addEventListener('keydown',(e)=>{
+window.addEventListener('keydown',e=>{
     direccion = e.code;
     raceCar.move(e.code);
 },false);
+function manualDirection(){
+  direccion = $(this).data("direction");
+  raceCar.move(direccion);
+  setTimeout(()=>direccion = "",500)
+
+}
 window.addEventListener('load', init, false);

@@ -8,11 +8,13 @@ class inpedimentModel{
      * @param {ancho del obstaculo} w 
      * @param {alto del obstaculo} h 
      * @param {profundidad del obstaculo} d 
+     * @param {color del obstaculo} c
+     * @param {Velocidad de movimiento del obstaculo} s
      */
-    constructor(w,h,d,c){
+    constructor(w,h,d,c,s = 0.3){
         this.mesh = new THREE.Object3D();
         this.type = "inpediment";
-        this.speed = 0.3;
+        this.speed = s;
         this.bajada = 0.035*this.speed/0.1;
         this.x = w;
         this.y = h;

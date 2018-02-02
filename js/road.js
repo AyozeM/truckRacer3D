@@ -22,7 +22,6 @@ class road{
     let mat = new THREE.MeshPhongMaterial({
       color:'green',
       map:createTexture,
-      transparent:false,
       opacity:.6,
       shading:THREE.FlatShading,
     });
