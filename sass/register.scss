@@ -1,0 +1,21 @@
+@import '_reset.scss';
+
+strong{
+    color:red;
+}
+.failed{
+    border-color:red;
+}
+input{
+    margin:1%;
+    height: 2em;
+}
+#show{
+    font-size: 2em;
+    cursor: pointer;
+    border: thin solid;
+}
+
+.showON{
+    background-color:gray;
+}

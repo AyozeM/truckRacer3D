@@ -333,7 +333,6 @@ window.addEventListener('keydown',e=>{
 function manualDirection(){
   direccion = $(this).data("direction");
   raceCar.move(direccion);
-  setTimeout(()=>direccion = "",500)
 
 }
 window.addEventListener('load', init, false);

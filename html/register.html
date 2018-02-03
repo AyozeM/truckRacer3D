@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link rel="stylesheet" href="../css/register.css">
+    <link rel="stylesheet" href="../css/lib/toastr.min.css">
+    <script src="../js/lib/jquery.js"></script>
+    <script src="../js/lib/toastr.min.js"></script>
+</head>
+<body>
+    <h1>Crea tu cuenta</h1>
+
+    <form action="">
+        <p>
+            <label for="name">
+                <span>Nombre <strong>*</strong></span>
+                <input type="text" id="name" required>
+            </label>
+        </p>
+        <p>
+            <label for="nickname">
+                <span>Nickname <strong>*</strong></span>
+                <input type="text" id="nickname" required>
+            </label>
+        </p>
+        <p>
+            <label for="lastname">
+                <span>Apellidos</span>
+                <input type="text" id="lastname">
+            </label>
+        </p>
+        <p>
+            <label for="age">
+                <span>Edad</span>
+                <input type="number" id="age" min="1" max="120">
+            </label>
+        </p>
+        <p>
+            <label for="email">
+                <span>Email <strong>*</strong></span>
+                <input type="email" id="email" required>
+            </label>
+        </p>
+        <p>
+            <label for="password">
+                <span>Contraseña <strong>*</strong></span>
+                <input type="password" id="password" required>
+                <span id="show">&#128065; </span> 
+            </label>
+        </p>
+        <p>
+            <label for="repeatPassword">
+                <span>Confirme su contraseña <strong>*</strong></span>
+                <input type="password" id="repeatPassword" required>
+            </label>
+        </p>
+
+        <a href="#" class="create">Terminar registro</a>
+        <a href="../index.html" class="cancel">Cancelar registro</a>
+    </form>
+    <script src="../js/register.js"></script>
+</body>
+</html>
