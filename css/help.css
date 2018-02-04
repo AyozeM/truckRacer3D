@@ -25,6 +25,7 @@ form strong {
 
 body {
   background-color: #4fbd4f;
+  overflow: auto;
 }
 
 h1 {

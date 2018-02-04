@@ -22,6 +22,10 @@ form strong {
   padding-right: 2%;
 }
 
+body {
+  overflow: auto;
+}
+
 h1 {
   text-align: center;
   font-family: 'Open Sans';
