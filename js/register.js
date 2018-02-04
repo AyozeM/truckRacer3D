@@ -16,7 +16,9 @@ $(document).ready(function(){
         $(this).siblings("input").attr("type","password");
         $(this).removeClass("showON");
     });
-
+    /**
+     * en el caso de que se cancele la creacion del usuario se guardaran en el localstorage por si fue un error
+     */
     $(".cancel").click(e=>{
         e.preventDefault();
         let backup = {};
@@ -26,7 +28,9 @@ $(document).ready(function(){
         localStorage.setItem("registerBackup",JSON.stringify(backup));
         window.location.pathname = "../index.html";
     });
-
+    /**
+     * Almacena el usuario
+     */
     $(".create").click(function(e){
         e.preventDefault();
         if(checkForm()){

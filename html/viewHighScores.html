@@ -1,13 +1,31 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
+    <link rel="stylesheet" href="../css/scores.css">
+    <script src="../js/lib/jquery.js"></script>
 </head>
 <body>
     <h1>Mejores puntuaciones</h1>
+    <a href="../index.html" class="home">&#127968;</a>
+    <nav>
+        <p>
+            <label for="users">
+                <span>Por usuarios</span>
+                <input type="radio" id="users" name="visor" value="users" checked>
+            </label>
+        </p>
+        <p>
+            <label for="bests">
+                <span>Por puntuacion</span>
+                <input type="radio" id="bests" name="visor" value="bests"> 
+            </label>
+        </p>
+    </nav>
     <section></section>
+    <script src="../js/scores.js"></script>
 </body>
 </html>

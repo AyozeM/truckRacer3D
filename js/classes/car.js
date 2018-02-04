@@ -1,9 +1,18 @@
-
+/**
+ * Clase coche
+ * @class
+ */
 class car {
     constructor(){
         this.mesh = new THREE.Object3D();
         this.mesh.name = "car";
+        /**
+         * Posicion actual del camion en la pista
+         */
         this.actuallyPosition = 0;
+        /**
+         * Velocidad de giro del camion
+         */
         this.velocidad = .5;
         /**
          * Valor absoluto  

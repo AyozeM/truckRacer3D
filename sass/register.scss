@@ -1,7 +1,11 @@
 @import '_reset.scss';
 
-strong{
-    color:red;
+h1{
+    text-align: center;
+    margin: 2%;
+}
+body{
+    background-color: rgb(79, 189, 79);
 }
 .failed{
     border-color:red;
@@ -13,9 +17,32 @@ input{
 #show{
     font-size: 2em;
     cursor: pointer;
-    border: thin solid;
+    position: absolute;
 }
 
 .showON{
-    background-color:gray;
+    background-color:rgb(255, 255, 148);
+}
+
+a{
+    margin-top:2%;
+    display: inline-block;
+    text-decoration: none;
+    color:black;
+    padding: 1%;
+    border-radius: 1ex;
+    cursor: pointer;
+}
+.create{
+    background-color: steelblue;
+}
+.cancel{
+    background-color: tomato;
+}
+form{
+    margin:2%;
+    & p{
+        display: flex;
+        justify-content: space-between;
+    }
 }
