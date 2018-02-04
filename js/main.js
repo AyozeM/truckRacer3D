@@ -7,7 +7,7 @@ $(document).ready(function(){
     $("#login").click(function(e){
         e.preventDefault();
         if(checkLogin($("#username").val(),$("#passwd").val())){
-            window.location.pathname = "html/game.html";
+            window.location.pathname = "truckRacer3D/html/game.html";
             localStorage.setItem("actualUser",$("#username").val());
         }
     });
