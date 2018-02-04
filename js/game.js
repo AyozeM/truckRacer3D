@@ -416,6 +416,7 @@ $(document).ready(function(){
     raceCar.life = 100;
     raceCar.actuallyPosition = 0;
     direccion = '';
+    $("#life").find("nav").css("width","100%");
     loop();
     $("#reload").fadeOut();
     showGame();
