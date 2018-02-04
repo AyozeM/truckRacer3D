@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: scores.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: scores.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>let dbScores;
+$(document).ready(function(){
+    dbScores = localStorage.getItem("scores");
+    if(dbScores != null){
+        dbScores = JSON.parse(dbScores);
+        interconector($("input[checked]").val());
+        $("input:checked").parent().addClass("checked");
+        $("input").change(function(){
+            $("input").parent().removeClass();
+            $("section").children().remove();
+            interconector($(this).val());
+            $("input:checked").parent().addClass("checked");
+        });
+    }else{
+        alert("no existen puntuaciones previas en este pc")
+    }
+});
+/**
+ * Decide que tipo de visualizacion de puntuaciones muestra
+ * @param {valor del radio} option 
+ */
+const interconector = option =>{
+    switch (option) {
+        case "users":
+            Object.keys(dbScores).map(e=>createRegister(e));
+            break;
+        case "bests":
+            let aux = [];
+            Object.keys(dbScores).map(e=>{
+                dbScores[e].map(y=>{
+                    aux.push({name:e,score:y.score});
+                })
+            });
+            createBestScore(aux);
+            break;
+    }
+}
+/**
+ * Visualiza las puntuaciones separadas por los usuarios
+ * @param {usuario} actual 
+ */
+const createRegister = actual =>{
+    dbScores[actual].sort((a,b)=>a.score-b.score).reverse();
+    $("&lt;div>").append(
+        $(`&lt;h3 class="toUp">${actual}&lt;/h3>`).click(function(){
+            $(this).siblings("div").slideToggle();
+            $(this).toggleClass("toDown");
+        })
+    ).append(
+        $("&lt;div>").append(
+            $("&lt;p>").append(
+                $("&lt;span>Fecha&lt;/span>")
+            ).append(
+                $("&lt;span>Puntuacion&lt;/span>")
+            )
+        ).append(
+        dbScores[actual].map(e=>{
+            let fecha = new Date(e.date);
+            return $("&lt;p>").append(
+                $(`&lt;span>${fecha.toDateString()} ${fecha.getHours()}:${fecha.getMinutes()}&lt;/span>`)
+            ).append(
+                $(`&lt;span>${e.score} kms&lt;/span>`)
+            )
+        })
+        )
+    ).appendTo("section");
+}
+/**
+ * Muestra las puntuaciones de mejor a peor
+ * @param {Lista de puntuaciones} allScore 
+ */
+const createBestScore = allScore =>{
+    allScore.sort((a,b)=>a.score-b.score).reverse();
+    $("section").append(
+        $("&lt;p>").append(
+            $("&lt;span>Nickname&lt;/span>")
+        ).append(
+            $("&lt;span>Puntuacion&lt;/span>")
+        )
+    )
+    allScore.map(e=>{
+        $("&lt;p>").append(
+            $(`&lt;span>${e.name}&lt;/span>`)
+        ).append(
+            $(`&lt;span>${e.score} km&lt;/span>`)
+        ).appendTo("section");
+    });
+}</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="fuelCan.html">fuelCan</a></li><li><a href="inpedimentModel.html">inpedimentModel</a></li><li><a href="road.html">road</a></li><li><a href="wall.html">wall</a></li></ul><h3>Global</h3><ul><li><a href="global.html#changeLevel">changeLevel</a></li><li><a href="global.html#checkCollision">checkCollision</a></li><li><a href="global.html#checkEmail">checkEmail</a></li><li><a href="global.html#checkForm">checkForm</a></li><li><a href="global.html#checkLogin">checkLogin</a></li><li><a href="global.html#checkNickName">checkNickName</a></li><li><a href="global.html#checkNumber">checkNumber</a></li><li><a href="global.html#checkPasswd">checkPasswd</a></li><li><a href="global.html#checkRequired">checkRequired</a></li><li><a href="global.html#createBestScore">createBestScore</a></li><li><a href="global.html#createCar">createCar</a></li><li><a href="global.html#createPetrol">createPetrol</a></li><li><a href="global.html#createRegister">createRegister</a></li><li><a href="global.html#createRoad">createRoad</a></li><li><a href="global.html#createWall">createWall</a></li><li><a href="global.html#dataRestore">dataRestore</a></li><li><a href="global.html#dbUsers">dbUsers</a></li><li><a href="global.html#getDb">getDb</a></li><li><a href="global.html#getLevel">getLevel</a></li><li><a href="global.html#getUserScore">getUserScore</a></li><li><a href="global.html#hideGame">hideGame</a></li><li><a href="global.html#init">init</a></li><li><a href="global.html#interconector">interconector</a></li><li><a href="global.html#kms">kms</a></li><li><a href="global.html#loop">loop</a></li><li><a href="global.html#putPetrol">putPetrol</a></li><li><a href="global.html#putWall">putWall</a></li><li><a href="global.html#removeUnlessElements">removeUnlessElements</a></li><li><a href="global.html#showGame">showGame</a></li><li><a href="global.html#storeScore">storeScore</a></li><li><a href="global.html#updateCar">updateCar</a></li><li><a href="global.html#updateRoad">updateRoad</a></li><li><a href="global.html#updateScore">updateScore</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.0-dev</a> on Sun Feb 04 2018 21:26:22 GMT+0000 (STD)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

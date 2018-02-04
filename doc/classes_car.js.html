@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: classes/car.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: classes/car.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * Clase coche
+ * @class
+ */
+class car {
+    constructor(){
+        this.mesh = new THREE.Object3D();
+        this.mesh.name = "car";
+        /**
+         * Posicion actual del camion en la pista
+         */
+        this.actuallyPosition = 0;
+        /**
+         * Velocidad de giro del camion
+         */
+        this.velocidad = .5;
+        /**
+         * Valor absoluto  
+         */
+        this.tope = 21;
+        /**
+         * Cantidad de vida con la que cuenta el usuario
+         */
+        this.life = 100;
+        /**
+         * Cantidad de gasolina con la que cuenta el usuario
+         */
+        this.fuel = 100;
+        
+        this.gandola();
+        this.cabina();
+        this.wheels();
+        this.glasses();
+        /**
+         * Hace que disminuya la gasolina
+         */
+        setInterval(()=>{
+            this.fuel -= 1;
+        },1000);
+    }
+    /**
+     * Crea la gandola
+     */
+    gandola(){
+        let geomCockpit = new THREE.BoxGeometry(60,50,60,1,1,1);
+        let matCockpit = new THREE.MeshPhongMaterial({color:Colors.red, shading:THREE.FlatShading});
+        let cockpit = new THREE.Mesh(geomCockpit, matCockpit);
+        cockpit.castShadow = true;
+        cockpit.receiveShadow = true;
+        this.mesh.add(cockpit);
+    }
+    /**
+     * Crea los cristales
+     */
+    glasses(){
+        let glasses = [];
+        for (let i = 0; i &lt; 2; i++) {
+            let geomGlass = new THREE.BoxGeometry(1,15,25,1,1,1);
+            let matGlass = new THREE.MeshPhongMaterial({color:0x68c3c0, shading:THREE.FlatShading});
+            let glass = new THREE.Mesh(geomGlass, matGlass);
+              glass.castShadow = true;
+            glass.receiveShadow = true;
+            glass.position.z = -50;
+            glass.position.y = 10;
+            glasses.push(glass);
+            this.mesh.add(glass);        
+        }
+        glasses[0].position.x = 28.75;
+        glasses[1].position.x = -28.75;
+    }
+    /**
+     * Crea la cabina
+     */
+    cabina(){
+        let geomEngine = new THREE.BoxGeometry(58,40,60,1,1,1);
+        let matEngine = new THREE.MeshPhongMaterial({color:0x59332e, shading:THREE.FlatShading});
+        let engine = new THREE.Mesh(geomEngine, matEngine);
+          engine.castShadow = true;
+        engine.receiveShadow = true;
+        engine.position.z = -40;
+        this.mesh.add(engine);
+    }
+    /**
+     * Crea las ruedas
+     */
+    wheels(){
+        let wheels = [];
+        for (let i = 0; i &lt; 4; i++) {
+            let geomWheel = new THREE.TorusGeometry(8.5,6,16,100);
+            let matWhell = new THREE.MeshPhongMaterial({
+                color:'black',
+                shading:THREE.FlatShading
+            });
+            let wheel = new THREE.Mesh(geomWheel,matWhell);
+            wheel.castShadow = true;
+            wheel.receiveShadow = true;
+            wheel.rotation.y = .5 * Math.PI;
+            wheels.push(wheel);                        
+            this.mesh.add(wheel);
+        }
+        wheels[0].position.x = -25.5;
+        wheels[0].position.y = -25;
+        wheels[0].position.z = -52;
+        
+        wheels[1].position.x = 25.5;
+        wheels[1].position.y = -25;
+        wheels[1].position.z = -52;
+        
+        wheels[2].position.x = 25.5;
+        wheels[2].position.y = -30;
+        wheels[2].position.z = 10;
+
+        wheels[3].position.x = -25.5;
+        wheels[3].position.y = -30;
+        wheels[3].position.z = 10;
+    }
+    /**
+     * Permite que el camion se mueva de derecha a izquierda
+     * @param {direccion a la que se quiere mover} direction 
+     */
+    move(direction){
+        switch(direction){
+            case 'ArrowLeft':
+                if(this.actuallyPosition >= this.tope*-1){
+                    this.actuallyPosition-= this.velocidad;
+                }else{
+                    this.actuallyPosition = (this.tope -5)*-1;
+                    this.life -= 5;
+                }                     
+                this.mesh.rotation.y = .05 * Math.PI;
+                break;
+            case 'ArrowRight':
+                if(this.actuallyPosition &lt;= this.tope){
+                    this.actuallyPosition += this.velocidad;
+
+                }else{
+                    this.actuallyPosition = this.tope -5;
+                    this.life -= 5;
+                }
+                this.mesh.rotation.y = -.05 * Math.PI;
+                break;
+            default:
+                this.mesh.rotation.y = 0;
+                break;
+        }
+        this.mesh.position.x = this.actuallyPosition;
+    }
+    /**
+     * Inserta gasolina al camion, comprobando que no se rebose el tanque
+     * @param {cantidad de gasolina} fuel 
+     */
+    setFuel(fuel){
+        this.fuel += fuel;
+        if(this.fuel > 100){
+            this.fuel = 100;
+        }
+    }
+}</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="fuelCan.html">fuelCan</a></li><li><a href="inpedimentModel.html">inpedimentModel</a></li><li><a href="road.html">road</a></li><li><a href="wall.html">wall</a></li></ul><h3>Global</h3><ul><li><a href="global.html#changeLevel">changeLevel</a></li><li><a href="global.html#checkCollision">checkCollision</a></li><li><a href="global.html#checkEmail">checkEmail</a></li><li><a href="global.html#checkForm">checkForm</a></li><li><a href="global.html#checkLogin">checkLogin</a></li><li><a href="global.html#checkNickName">checkNickName</a></li><li><a href="global.html#checkNumber">checkNumber</a></li><li><a href="global.html#checkPasswd">checkPasswd</a></li><li><a href="global.html#checkRequired">checkRequired</a></li><li><a href="global.html#createBestScore">createBestScore</a></li><li><a href="global.html#createCar">createCar</a></li><li><a href="global.html#createPetrol">createPetrol</a></li><li><a href="global.html#createRegister">createRegister</a></li><li><a href="global.html#createRoad">createRoad</a></li><li><a href="global.html#createWall">createWall</a></li><li><a href="global.html#dataRestore">dataRestore</a></li><li><a href="global.html#dbUsers">dbUsers</a></li><li><a href="global.html#getDb">getDb</a></li><li><a href="global.html#getLevel">getLevel</a></li><li><a href="global.html#getUserScore">getUserScore</a></li><li><a href="global.html#hideGame">hideGame</a></li><li><a href="global.html#init">init</a></li><li><a href="global.html#interconector">interconector</a></li><li><a href="global.html#kms">kms</a></li><li><a href="global.html#loop">loop</a></li><li><a href="global.html#putPetrol">putPetrol</a></li><li><a href="global.html#putWall">putWall</a></li><li><a href="global.html#removeUnlessElements">removeUnlessElements</a></li><li><a href="global.html#showGame">showGame</a></li><li><a href="global.html#storeScore">storeScore</a></li><li><a href="global.html#updateCar">updateCar</a></li><li><a href="global.html#updateRoad">updateRoad</a></li><li><a href="global.html#updateScore">updateScore</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.0-dev</a> on Sun Feb 04 2018 21:26:22 GMT+0000 (STD)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

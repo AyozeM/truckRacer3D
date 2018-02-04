@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: register.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: register.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * Base de datos con los usuarios ya registrados
+ */
+let dbUsers;
+$(document).ready(function(){
+    getDb();
+    dataRestore();
+    /**
+     * Los eventos mousedown y mouseup sirven para que el usuario pueda ver claramente la contraseña que escribio en el primer campo
+     */
+    $("#show").mousedown(function(){
+        $(this).siblings("input").attr("type","text");
+        $(this).addClass("showON");
+    });
+    $("#show").mouseup(function(){
+        $(this).siblings("input").attr("type","password");
+        $(this).removeClass("showON");
+    });
+    /**
+     * en el caso de que se cancele la creacion del usuario se guardaran en el localstorage por si fue un error
+     */
+    $(".cancel").click(e=>{
+        e.preventDefault();
+        let backup = {};
+        $("input").each(function(i){
+            backup[$(this).attr("id")] = $(this).val();
+        });
+        localStorage.setItem("registerBackup",JSON.stringify(backup));
+        window.location.pathname = "../index.html";
+    });
+    /**
+     * Almacena el usuario
+     */
+    $(".create").click(function(e){
+        e.preventDefault();
+        if(checkForm()){
+            localStorage.removeItem("registerBackup");
+            dbUsers[$("#nickname").val()]={
+                name:$("#name").val(),
+                lastname:$("#lastname").val(),
+                age:$("#age").val(),
+                email:$("#email").val(),
+                passwd:$("#password").val()
+            };
+            localStorage.setItem("users",JSON.stringify(dbUsers));
+            $("input").val("");
+        }
+    });
+});
+/**
+ * Obtiene la base de datos de usuarios
+ */
+const getDb = () =>{
+    dbUsers = localStorage.getItem("users");
+    dbUsers == null ? dbUsers = {} : dbUsers = JSON.parse(dbUsers);
+}
+/**
+ * Restaura los datos introducidos por el cliente en el caso de cancelacion, por si es un error.
+ */
+const dataRestore = () =>{
+    let data = localStorage.getItem("registerBackup");
+    if(data != null){
+        data = JSON.parse(data);
+        Object.keys(data).map(e=>{
+            $(`#${e}`).val(data[e]);
+        });
+        toastr.info("Continua donde lo dejaste");
+    }
+};
+/**
+ * comprueba la inegridad del formulario
+ */
+const checkForm = () =>{
+    $(".failed").removeClass("failed");
+    let checkOK = true;
+    if(!checkRequired() || !checkEmail() || !checkNumber() || !checkPasswd() || !checkNickName()){
+        checkOK = false;
+    }
+    return checkOK;
+};
+/**
+ * comprueba que los campos requeridos no esten en blanco
+ */
+const checkRequired = () =>{
+    let checkOK = true;
+    $("input[required]").each(function(){
+        if($(this).val().length &lt; 1){
+            checkOK = false;
+            $(this).addClass("failed");
+            toastr.error(`El campo ${$(this).siblings('span').text()} es obligatorio`);
+        }
+    });
+    return checkOK;
+};
+/**
+ * Comprueba la validez de los email
+ */
+const checkEmail = () =>{
+    let checkOK = true;
+    $('input[type="email"]').each(function(){
+        if(!/^[a-zA-Z0-9.!#$%&amp;’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/.test($(this).val())){
+            checkOK = false;
+            $(this).addClass("failed");
+            toastr.error("El formato del email es incorrecto");
+        }
+    });
+    return checkOK;
+}
+/**
+ * Comprueba que los campos numericos sean numericos
+ */
+const checkNumber = () =>{
+    let checkOK = true;
+    $("input[number]").each(function(){
+        let n = parseInt($(this).val());
+        let min = parseInt($(this).attr("min"));
+        let max = parseInt($(this).attr("max"));
+        if(typeof(n) == "NaN" || n &lt; min || n > max){
+            checkOK = false;
+            $(this).addClass("failed");
+            toastr.error("En la edad solo se permiten numeros enteros entre 1 y 120");
+        }
+    });
+    return checkOK;
+}
+/**
+ * Comprueba que las contraseñas sean iguales
+ */
+const checkPasswd = () =>{
+    let passwd1,passwd2;
+    let checkOK = true;
+    $('input[type="password"]').each(function(i){
+        i%2 == 0 ? passwd2 = $(this).val() : passwd1 = $(this).val();
+    });
+    if(passwd1 != passwd2){
+        checkOK = false;
+        $("#repeatPassword").addClass("failed");
+        toastr.error("Las contraseñas no coinciden")
+    }
+    return checkOK;
+}
+/**
+ * comprueba que el nickname no esta repetido
+ */
+const checkNickName = () =>{
+    const value = $("#nickname").val();
+    let checkOK = true;
+    let keys = Object.keys(dbUsers);
+    if(keys.includes(value)){
+        checkOK = false;
+        $("#nickname").addClass("failed");
+        toastr.error("Lo sentimos, este nickname ya esta cogido");
+    }
+    return checkOK;
+}</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="fuelCan.html">fuelCan</a></li><li><a href="inpedimentModel.html">inpedimentModel</a></li><li><a href="road.html">road</a></li><li><a href="wall.html">wall</a></li></ul><h3>Global</h3><ul><li><a href="global.html#changeLevel">changeLevel</a></li><li><a href="global.html#checkCollision">checkCollision</a></li><li><a href="global.html#checkEmail">checkEmail</a></li><li><a href="global.html#checkForm">checkForm</a></li><li><a href="global.html#checkLogin">checkLogin</a></li><li><a href="global.html#checkNickName">checkNickName</a></li><li><a href="global.html#checkNumber">checkNumber</a></li><li><a href="global.html#checkPasswd">checkPasswd</a></li><li><a href="global.html#checkRequired">checkRequired</a></li><li><a href="global.html#createBestScore">createBestScore</a></li><li><a href="global.html#createCar">createCar</a></li><li><a href="global.html#createPetrol">createPetrol</a></li><li><a href="global.html#createRegister">createRegister</a></li><li><a href="global.html#createRoad">createRoad</a></li><li><a href="global.html#createWall">createWall</a></li><li><a href="global.html#dataRestore">dataRestore</a></li><li><a href="global.html#dbUsers">dbUsers</a></li><li><a href="global.html#getDb">getDb</a></li><li><a href="global.html#getLevel">getLevel</a></li><li><a href="global.html#getUserScore">getUserScore</a></li><li><a href="global.html#hideGame">hideGame</a></li><li><a href="global.html#init">init</a></li><li><a href="global.html#interconector">interconector</a></li><li><a href="global.html#kms">kms</a></li><li><a href="global.html#loop">loop</a></li><li><a href="global.html#putPetrol">putPetrol</a></li><li><a href="global.html#putWall">putWall</a></li><li><a href="global.html#removeUnlessElements">removeUnlessElements</a></li><li><a href="global.html#showGame">showGame</a></li><li><a href="global.html#storeScore">storeScore</a></li><li><a href="global.html#updateCar">updateCar</a></li><li><a href="global.html#updateRoad">updateRoad</a></li><li><a href="global.html#updateScore">updateScore</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.0-dev</a> on Sun Feb 04 2018 21:26:22 GMT+0000 (STD)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
